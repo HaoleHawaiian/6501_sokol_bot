@@ -15,15 +15,15 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Check if the tokenizer has a pad token, and if not, set it to eos_token
 if tokenizer.pad_token is None:
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token = tokenizer.eos_token  # Use eos_token as pad_token if it's missing
 
 # Streamlit interface
 st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
 user_input = st.text_input("Enter your question:")
 
 if user_input:
-    # Tokenize the input
-    inputs = tokenizer(user_input, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    # Tokenize the input with padding and truncation
+    inputs = tokenizer(user_input, return_tensors="pt", padding='max_length', truncation=True, max_length=512)
     
     # Generate the model's response
     outputs = model.generate(
