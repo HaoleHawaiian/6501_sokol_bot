@@ -9,7 +9,7 @@ import streamlit as st
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # Load model and tokenizer
-model_name = "TinyLlama/TinyLlama_v1.1_math_code"  # or "TinyLlama/TinyLlama_v1.1" for standard
+model_name = "TinyLlama/TinyLlama_v1.1_math_code"
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
@@ -19,12 +19,12 @@ user_input = st.text_input("Enter your question:")
 
 if user_input:
     # Tokenize the input
-    inputs = tokenizer(user_input, return_tensors="pt", truncation=True, padding=True)
+    inputs = tokenizer(user_input, return_tensors="pt", padding='max_length', truncation=True, max_length=512)
     
     # Generate the model's response
     outputs = model.generate(
         inputs['input_ids'], 
-        max_length=100,  # Set a maximum length to prevent infinite loops or very long responses
+        max_length=100,  # Set a maximum length for the output
         num_return_sequences=1,  # Generate one response
         no_repeat_ngram_size=2,  # Prevent repetition of n-grams
         temperature=0.7,  # Control randomness
