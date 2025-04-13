@@ -13,12 +13,13 @@ model_name = "TinyLlama/TinyLlama_v1.1_math_code"
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-# Check if the tokenizer has a pad token, and if not, set it to eos_token
+# Check and set pad_token
 if tokenizer.pad_token is None:
-    tokenizer.pad_token = tokenizer.eos_token  # Use eos_token as pad_token if not defined
+    tokenizer.add_special_tokens({'pad_token': '[PAD]'})  # Explicitly add a [PAD] token
 
-# Add a new pad token, like [PAD], if needed (for consistency)
-tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+# Resize model embeddings to account for added special tokens
+model.resize_token_embeddings(len(tokenizer))
+
 
 # Streamlit interface
 st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
@@ -26,7 +27,14 @@ user_input = st.text_input("Enter your question:")
 
 if user_input:
     # Tokenize the input with padding and truncation
-    inputs = tokenizer(user_input, return_tensors="pt", padding='max_length', truncation=True, max_length=512)
+    inputs = tokenizer(
+        user_input,
+        return_tensors="pt",
+        padding=True,  # Automatically pads to the longest sequence in the batch
+        truncation=True,
+        max_length=512  # Adjust max_length as needed
+    )
+
     
     # Generate the model's response
     outputs = model.generate(
