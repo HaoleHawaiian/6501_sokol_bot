@@ -13,8 +13,12 @@ model_name = "TinyLlama/TinyLlama_v1.1_math_code"
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
+# Check if the tokenizer has a pad token, and if not, set it to eos_token
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
 # Streamlit interface
-st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning")
+st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
 user_input = st.text_input("Enter your question:")
 
 if user_input:
