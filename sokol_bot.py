@@ -19,7 +19,8 @@ user_input = st.text_input("Enter your question:")
 
 if user_input:
     # Tokenize the input
-    inputs = tokenizer(user_input, return_tensors="pt", padding='max_length', truncation=True, max_length=512)
+    inputs = tokenizer(user_input, return_tensors="pt", padding=True, truncation=True, max_length=512)
+
     
     # Generate the model's response
     outputs = model.generate(
