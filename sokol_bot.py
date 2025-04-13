@@ -13,9 +13,9 @@ model_name = "TinyLlama/TinyLlama_v1.1_math_code"
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-# Check if the tokenizer has a pad token, and if not, set it to eos_token
+# Add a new pad token if needed (e.g., '[PAD]')
 if tokenizer.pad_token is None:
-    tokenizer.pad_token = tokenizer.eos_token  # Use eos_token as pad_token if it's missing
+    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
 # Streamlit interface
 st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
