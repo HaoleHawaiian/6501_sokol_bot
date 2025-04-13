@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Apr 13 12:49:22 2025
-
-@author: aloha
-"""
-
 import streamlit as st
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import asyncio
+import sys
+
+# Fix for asyncio event loop on Windows
+if sys.version_info >= (3, 8) and sys.platform.startswith("win"):
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Load model and tokenizer
 model_name = "TinyLlama/TinyLlama_v1.1_math_code"
@@ -23,7 +22,7 @@ if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token  # Fallback to eos_token
 
 # Resize model embeddings to account for added special tokens
-model.resize_token_embeddings(len(tokenizer))
+model.resize_token_embeddings(len(tokenizer), mean_resizing=False)
 
 # Debugging output for verification
 print(f"Pad token: {tokenizer.pad_token}, Pad token ID: {tokenizer.pad_token_id}")
