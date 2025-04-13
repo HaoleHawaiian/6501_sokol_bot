@@ -13,30 +13,38 @@ model_name = "TinyLlama/TinyLlama_v1.1_math_code"
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-# Check and set pad_token
+# Ensure pad_token is properly set
 if tokenizer.pad_token is None:
-    tokenizer.add_special_tokens({'pad_token': '[PAD]'})  # Explicitly add a [PAD] token
+    try:
+        tokenizer.add_special_tokens({'pad_token': '[PAD]'})  # Add [PAD] token explicitly
+        print("Added [PAD] token.")
+    except Exception as e:
+        print(f"Error adding [PAD] token: {e}")
+        tokenizer.pad_token = tokenizer.eos_token  # Fallback to eos_token
 
 # Resize model embeddings to account for added special tokens
 model.resize_token_embeddings(len(tokenizer))
 
+# Debugging output for verification
+print(f"Pad token: {tokenizer.pad_token}, Pad token ID: {tokenizer.pad_token_id}")
+print(f"EOS token: {tokenizer.eos_token}, EOS token ID: {tokenizer.eos_token_id}")
+print(f"Vocabulary size: {len(tokenizer)}")
 
 # Streamlit interface
 st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
 user_input = st.text_input("Enter your question:")
 
 if user_input:
-    # Tokenize the input with padding and truncation
+    # Tokenize input with padding and truncation
     inputs = tokenizer(
         user_input,
         return_tensors="pt",
-        padding=True,  # Automatically pads to the longest sequence in the batch
+        padding=True,  # Automatically pads sequences
         truncation=True,
         max_length=512  # Adjust max_length as needed
     )
 
-    
-    # Generate the model's response
+    # Generate response from model
     outputs = model.generate(
         inputs['input_ids'], 
         max_length=100,  # Set a maximum length for the output
@@ -48,8 +56,8 @@ if user_input:
         do_sample=True  # Enable sampling for more diverse answers
     )
     
-    # Decode the output tokens to text
+    # Decode response tokens to text
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     
-    # Show the response
+    # Display response in Streamlit app
     st.write(response)
