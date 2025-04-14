@@ -4,8 +4,11 @@ import asyncio
 import sys
 
 # Fix for asyncio event loop on Windows
-if sys.version_info >= (3, 8) and sys.platform.startswith("win"):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+if sys.version_info >= (3, 10):
+    try:
+        asyncio.set_event_loop(asyncio.new_event_loop())
+    except RuntimeError as e:
+        print(f"AsyncIO setup error: {e}")
 
 # Load model and tokenizer
 model_name = "TinyLlama/TinyLlama_v1.1_math_code"
@@ -25,9 +28,9 @@ if tokenizer.pad_token is None:
 model.resize_token_embeddings(len(tokenizer), mean_resizing=False)
 
 # Debugging output for verification
-print(f"Pad token: {tokenizer.pad_token}, Pad token ID: {tokenizer.pad_token_id}")
-print(f"EOS token: {tokenizer.eos_token}, EOS token ID: {tokenizer.eos_token_id}")
-print(f"Vocabulary size: {len(tokenizer)}")
+# print(f"Pad token: {tokenizer.pad_token}, Pad token ID: {tokenizer.pad_token_id}")
+# print(f"EOS token: {tokenizer.eos_token}, EOS token ID: {tokenizer.eos_token_id}")
+# print(f"Vocabulary size: {len(tokenizer)}")
 
 # Streamlit interface
 st.title("OMSA's ISYE 6501 Chatbot S.O.K.O.L. (Student Oriented Knowledge for Online Learning)")
