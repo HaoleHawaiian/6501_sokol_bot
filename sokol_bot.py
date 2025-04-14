@@ -2,6 +2,7 @@ import streamlit as st
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import asyncio
 import sys
+import torch
 
 # Fix for asyncio event loop on Windows
 if sys.version_info >= (3, 10):
@@ -12,7 +13,8 @@ if sys.version_info >= (3, 10):
 
 # Load model and tokenizer
 model_name = "TinyLlama/TinyLlama_v1.1_math_code"
-model = AutoModelForCausalLM.from_pretrained(model_name)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Ensure pad_token is properly set
@@ -41,21 +43,20 @@ if user_input:
     inputs = tokenizer(
         user_input,
         return_tensors="pt",
-        padding=True,  # Automatically pads sequences
+        padding=True,
         truncation=True,
-        max_length=512  # Adjust max_length as needed
-    )
-
-    # Generate response from model
+        max_length=512
+    ).to(device)
+    
     outputs = model.generate(
-        inputs['input_ids'], 
-        max_length=100,  # Set a maximum length for the output
-        num_return_sequences=1,  # Generate one response
-        no_repeat_ngram_size=2,  # Prevent repetition of n-grams
-        temperature=0.7,  # Control randomness
-        top_p=0.9,  # Nucleus sampling
-        top_k=50,  # Top-k sampling
-        do_sample=True  # Enable sampling for more diverse answers
+        inputs['input_ids'],
+        max_length=100,
+        num_return_sequences=1,
+        no_repeat_ngram_size=2,
+        temperature=0.7,
+        top_p=0.9,
+        top_k=50,
+        do_sample=True
     )
     
     # Decode response tokens to text
