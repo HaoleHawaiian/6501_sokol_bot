@@ -13,8 +13,8 @@ if sys.version_info >= (3, 10):
 
 # Load model and tokenizer
 model_name = "TinyLlama/TinyLlama_v1.1_math_code"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = AutoModelForCausalLM.from_pretrained(model_name)# .to(device)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # # Resize model embeddings to account for added special tokens
@@ -34,7 +34,7 @@ if user_input:
         padding=True,
         truncation=True,
         max_length=512
-    ).to(device)
+    )# .to(device)
     
     # Generate response using the model
     with torch.no_grad():  # Disable gradients for inference
