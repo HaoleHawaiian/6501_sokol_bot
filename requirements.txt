@@ -1,4 +1,4 @@
-transformers
-torch
+transformers>=4.30
+torch>=2.0
 streamlit
 pyarrow
