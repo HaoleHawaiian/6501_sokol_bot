@@ -28,8 +28,12 @@ user_input = st.text_input("Enter your question:")
 
 if user_input:
     # Tokenize input with padding and truncation
+    prompt = f"""You are a helpful tutor for Georgia Tech's ISYE 6501 course. Answer questions clearly and concisely.
+
+User: {user_input}
+Assistant:"""
     inputs = tokenizer(
-        user_input,
+        prompt,
         return_tensors="pt",
         padding=True,
         truncation=True,
@@ -51,6 +55,10 @@ if user_input:
     
     # Decode response tokens to text
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    
+    # Extract only the assistant's response (after "Assistant:")
+    if "Assistant:" in response:
+        response = response.split("Assistant:")[-1].strip()
     
     # Display response in Streamlit app
     st.write(response)
